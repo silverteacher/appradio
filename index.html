@@ -1,556 +1,540 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.4">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tester les radios en classe</title>
+<style>
+    /* ========== VARIABLES CSS ========== */
+    :root {
+        --couleur-primaire: #00aa88;
+        --couleur-secondaire: #0077cc;
+        --couleur-accent: #ff6600;
+        --couleur-fond: #f5f5f5; /* fond clair */
+        --couleur-fond-carte: #ffffff; /* fond des cartes */
+        --couleur-texte: #222222; /* texte sombre */
+        --couleur-texte-secondaire: #555555;
+        --couleur-bordure: #dddddd;
+        --couleur-succes: #009933;
+        --couleur-erreur: #cc0033;
+
+        --espacement-petit: 8px;
+        --espacement-moyen: 16px;
+        --espacement-grand: 24px;
+        --espacement-tres-grand: 32px;
+
+        --taille-titre: 2.5rem;
+        --taille-sous-titre: 1.5rem;
+        --taille-texte: 1rem;
+        --taille-petit-texte: 0.875rem;
+
+        --rayon-bordure: 12px;
+        --ombre-carte: 0 8px 32px rgba(0, 170, 136, 0.2);
+        --ombre-hover: 0 12px 48px rgba(0, 170, 136, 0.3);
+
+        --shimmer-couleur1: rgba(255, 255, 255, 0.1);
+        --shimmer-couleur2: rgba(0, 170, 136, 0.3);
+    }
+
+    /* ========== STYLES GÉNÉRAUX ========== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--couleur-fond);
+        color: var(--couleur-texte);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ========== EN-TÊTE ========== */
+    .en-tete {
+        text-align: center;
+        padding: var(--espacement-tres-grand) var(--espacement-moyen);
+        background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-secondaire));
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .titre-principal {
+        font-size: var(--taille-titre);
+        font-weight: bold;
+        margin-bottom: var(--espacement-petit);
+    }
+
+    .sous-titre {
+        font-size: var(--taille-sous-titre);
+        opacity: 0.8;
+        color: var(--couleur-texte-secondaire);
+    }
+
+    /* ========== ZONE DE JEU ========== */
+    .zone-jeu {
+        flex: 1;
+        padding: var(--espacement-tres-grand) var(--espacement-moyen);
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .score-global {
+        text-align: center;
+        margin-bottom: var(--espacement-tres-grand);
+        font-size: var(--taille-sous-titre);
+        color: var(--couleur-primaire);
+    }
+
+    .grille-cartes {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--espacement-moyen);
+        margin-bottom: var(--espacement-tres-grand);
+    }
+
+    /* ========== CARTES ========== */
+    .carte {
+        background: var(--couleur-fond-carte);
+        border: 2px solid var(--couleur-bordure);
+        border-radius: var(--rayon-bordure);
+        padding: var(--espacement-moyen);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .carte:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--ombre-hover);
+        border-color: var(--couleur-primaire);
+    }
+
+    .carte.resolue {
+        border-color: var(--couleur-succes);
+        background: linear-gradient(135deg, var(--couleur-fond-carte), rgba(0, 153, 51, 0.1));
+    }
+
+    .carte.echouee {
+        border-color: var(--couleur-erreur);
+        background: linear-gradient(135deg, var(--couleur-fond-carte), rgba(204, 0, 51, 0.1));
+    }
+
+    /* Effet shimmer */
+    .carte::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+            45deg,
+            transparent 30%,
+            var(--shimmer-couleur1) 50%,
+            var(--shimmer-couleur2) 60%,
+            transparent 70%
+        );
+        animation: shimmer 3s infinite;
+        pointer-events: none;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .numero-carte {
+        position: absolute;
+        top: var(--espacement-petit);
+        right: var(--espacement-petit);
+        background: var(--couleur-primaire);
+        color: var(--couleur-fond);
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--taille-petit-texte);
+        font-weight: bold;
+        z-index: 2;
+    }
+
+    .description-radio {
+        flex: 1;
+        margin-bottom: var(--espacement-moyen);
+        line-height: 1.5;
+        color: var(--couleur-texte);
+    }
+
+    .section-indice {
+        margin-top: auto;
+        padding-top: var(--espacement-moyen);
+        border-top: 1px solid var(--couleur-bordure);
+    }
+
+    .bouton-indice {
+        display: flex;
+        align-items: center;
+        gap: var(--espacement-petit);
+        background: var(--couleur-secondaire);
+        color: white;
+        border: none;
+        padding: var(--espacement-petit) var(--espacement-moyen);
+        border-radius: var(--rayon-bordure);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: var(--taille-petit-texte);
+        margin-bottom: var(--espacement-moyen);
+    }
+
+    .bouton-indice:hover {
+        background: var(--couleur-accent);
+        transform: scale(1.05);
+    }
+
+    .icone-ampoule {
+        font-size: 1.2em;
+    }
+
+    .indice-cache {
+        display: none;
+        background: rgba(0, 170, 136, 0.1);
+        padding: var(--espacement-moyen);
+        border-radius: var(--rayon-bordure);
+        margin-top: var(--espacement-petit);
+        border-left: 3px solid var(--couleur-accent);
+        color: var(--couleur-texte);
+    }
+
+    .zone-saisie {
+        margin-top: var(--espacement-moyen);
+    }
+
+    .champ-reponse {
+        width: 100%;
+        padding: var(--espacement-moyen);
+        border: 2px solid var(--couleur-bordure);
+        border-radius: var(--rayon-bordure);
+        background: var(--couleur-fond);
+        color: var(--couleur-texte);
+        font-size: var(--taille-texte);
+        margin-bottom: var(--espacement-petit);
+    }
+
+    .champ-reponse:focus {
+        outline: none;
+        border-color: var(--couleur-primaire);
+        box-shadow: 0 0 0 2px rgba(0, 170, 136, 0.2);
+    }
+
+    .bouton-valider {
+        width: 100%;
+        padding: var(--espacement-moyen);
+        background: var(--couleur-primaire);
+        color: var(--couleur-fond);
+        border: none;
+        border-radius: var(--rayon-bordure);
+        cursor: pointer;
+        font-size: var(--taille-texte);
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .bouton-valider:hover {
+        background: var(--couleur-accent);
+        transform: translateY(-2px);
+    }
+
+    .bouton-valider:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .tentatives-restantes {
+        text-align: center;
+        margin-top: var(--espacement-petit);
+        font-size: var(--taille-petit-texte);
+        color: var(--couleur-texte-secondaire);
+    }
+
+    .reponse-revelee {
+        background: var(--couleur-primaire);
+        color: var(--couleur-fond);
+        padding: var(--espacement-moyen);
+        border-radius: var(--rayon-bordure);
+        text-align: center;
+        font-size: var(--taille-sous-titre);
+        font-weight: bold;
+        margin-top: var(--espacement-moyen);
+    }
+
+    .score-carte {
+        text-align: center;
+        margin-top: var(--espacement-petit);
+        font-weight: bold;
+    }
+
+    .score-carte.succes {
+        color: var(--couleur-succes);
+    }
+
+    .score-carte.echec {
+        color: var(--couleur-erreur);
+    }
+
+    /* ========== PIED DE PAGE ========== */
+    .pied-de-page {
+        background: var(--couleur-fond-carte);
+        padding: var(--espacement-moyen);
+        text-align: center;
+        border-top: 1px solid var(--couleur-bordure);
+        font-size: var(--taille-petit-texte);
+        color: var(--couleur-texte-secondaire);
+    }
+
+    .liens-pied {
+        margin-top: var(--espacement-petit);
+    }
+
+    .liens-pied a {
+        color: var(--couleur-primaire);
+        text-decoration: none;
+        margin: 0 var(--espacement-moyen);
+    }
+
+    .liens-pied a:hover {
+        text-decoration: underline;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+        .grille-cartes {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .titre-principal {
+            font-size: 2rem;
+        }
+
+        .zone-jeu {
+            padding: var(--espacement-moyen);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .grille-cartes {
+            grid-template-columns: 1fr;
+        }
+
+        .titre-principal {
+            font-size: 1.5rem;
+        }
+    }
+</style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="fr"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8" /&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1" /&gt;</p>
-<p class="p1">&lt;title&gt;Tester les radios en classe&lt;/title&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* ========== VARIABLES CSS ========== */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>:root {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-primaire: #00aa88;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-secondaire: #0077cc;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-accent: #ff6600;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-fond: #f5f5f5; /* fond clair */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-fond-carte: #ffffff; /* fond des cartes */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-texte: #222222; /* texte sombre */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-texte-secondaire: #555555;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-bordure: #dddddd;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-succes: #009933;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--couleur-erreur: #cc0033;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>--espacement-petit: 8px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--espacement-moyen: 16px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--espacement-grand: 24px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--espacement-tres-grand: 32px;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>--taille-titre: 2.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--taille-sous-titre: 1.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--taille-texte: 1rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--taille-petit-texte: 0.875rem;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>--rayon-bordure: 12px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--ombre-carte: 0 8px 32px rgba(0, 170, 136, 0.2);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--ombre-hover: 0 12px 48px rgba(0, 170, 136, 0.3);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>--shimmer-couleur1: rgba(255, 255, 255, 0.1);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>--shimmer-couleur2: rgba(0, 170, 136, 0.3);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* ========== STYLES GÉNÉRAUX ========== */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>* {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: 0;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>box-sizing: border-box;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-fond);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-texte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>min-height: 100vh;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* ========== EN-TÊTE ========== */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.en-tete {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-tres-grand) var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-secondaire));</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background-clip: text;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>-webkit-background-clip: text;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>-webkit-text-fill-color: transparent;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.titre-principal {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-titre);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-bottom: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.sous-titre {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-sous-titre);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>opacity: 0.8;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-texte-secondaire);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* ========== ZONE DE JEU ========== */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.zone-jeu {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>flex: 1;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-tres-grand) var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>max-width: 1200px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin: 0 auto;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.score-global {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-bottom: var(--espacement-tres-grand);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-sous-titre);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-primaire);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.grille-cartes {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>display: grid;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>grid-template-columns: repeat(4, 1fr);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>gap: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-bottom: var(--espacement-tres-grand);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* ========== CARTES ========== */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.carte {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-fond-carte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border: 2px solid var(--couleur-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-radius: var(--rayon-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>transition: all 0.3s ease;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>position: relative;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>overflow: hidden;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>min-height: 300px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>flex-direction: column;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.carte:hover {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>transform: translateY(-4px);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>box-shadow: var(--ombre-hover);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-color: var(--couleur-primaire);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.carte.resolue {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-color: var(--couleur-succes);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: linear-gradient(135deg, var(--couleur-fond-carte), rgba(0, 153, 51, 0.1));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.carte.echouee {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-color: var(--couleur-erreur);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: linear-gradient(135deg, var(--couleur-fond-carte), rgba(204, 0, 51, 0.1));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* Effet shimmer */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.carte::before {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>content: '';</p>
-<p class="p1"><span class="Apple-converted-space">        </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>top: -50%;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>left: -50%;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>width: 200%;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>height: 200%;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: linear-gradient(</p>
-<p class="p1"><span class="Apple-converted-space">            </span>45deg,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transparent 30%,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>var(--shimmer-couleur1) 50%,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>var(--shimmer-couleur2) 60%,</p>
-<p class="p1"><span class="Apple-converted-space">            </span>transparent 70%</p>
-<p class="p1"><span class="Apple-converted-space">        </span>);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>animation: shimmer 3s infinite;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>pointer-events: none;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>@keyframes shimmer {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>100% { transform: translateX(100%) translateY(100%) rotate(45deg); }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.numero-carte {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>position: absolute;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>top: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>right: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-primaire);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-fond);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>width: 24px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>height: 24px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-radius: 50%;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>justify-content: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-petit-texte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>z-index: 2;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.description-radio {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>flex: 1;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-bottom: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>line-height: 1.5;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-texte);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.section-indice {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-top: auto;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding-top: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-top: 1px solid var(--couleur-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.bouton-indice {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>display: flex;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>align-items: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>gap: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-secondaire);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: white;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-petit) var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-radius: var(--rayon-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>transition: all 0.3s ease;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-petit-texte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-bottom: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.bouton-indice:hover {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-accent);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>transform: scale(1.05);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.icone-ampoule {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: 1.2em;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.indice-cache {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>display: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: rgba(0, 170, 136, 0.1);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-radius: var(--rayon-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-top: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-left: 3px solid var(--couleur-accent);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-texte);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.zone-saisie {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-top: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.champ-reponse {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border: 2px solid var(--couleur-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-radius: var(--rayon-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-fond);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-texte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-texte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-bottom: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.champ-reponse:focus {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>outline: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-color: var(--couleur-primaire);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>box-shadow: 0 0 0 2px rgba(0, 170, 136, 0.2);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.bouton-valider {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-primaire);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-fond);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-radius: var(--rayon-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cursor: pointer;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-texte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>transition: all 0.3s ease;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.bouton-valider:hover {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-accent);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>transform: translateY(-2px);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.bouton-valider:disabled {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>opacity: 0.5;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cursor: not-allowed;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>transform: none;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.tentatives-restantes {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-top: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-petit-texte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-texte-secondaire);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.reponse-revelee {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-primaire);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-fond);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-radius: var(--rayon-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-sous-titre);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-top: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.score-carte {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-top: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-weight: bold;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.score-carte.succes {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-succes);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.score-carte.echec {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-erreur);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* ========== PIED DE PAGE ========== */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.pied-de-page {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>background: var(--couleur-fond-carte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>padding: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>text-align: center;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>border-top: 1px solid var(--couleur-bordure);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>font-size: var(--taille-petit-texte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-texte-secondaire);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.liens-pied {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin-top: var(--espacement-petit);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.liens-pied a {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>color: var(--couleur-primaire);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>text-decoration: none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>margin: 0 var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>.liens-pied a:hover {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>text-decoration: underline;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>/* ========== RESPONSIVE ========== */</p>
-<p class="p1"><span class="Apple-converted-space">    </span>@media (max-width: 768px) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.grille-cartes {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>grid-template-columns: repeat(2, 1fr);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.titre-principal {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 2rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.zone-jeu {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: var(--espacement-moyen);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>@media (max-width: 480px) {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.grille-cartes {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>grid-template-columns: 1fr;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>.titre-principal {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-size: 1.5rem;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- EN-TÊTE --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;header class="en-tete"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1 class="titre-principal"&gt;Tester les radios en classe&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="sous-titre"&gt;Découvrez les radios françaises à travers ce quiz interactif&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- ZONE DE JEU --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;main class="zone-jeu"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="score-global"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>Score total : &lt;span id="score-total"&gt;0&lt;/span&gt; / 120 points</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grille-cartes" id="grille-cartes"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Les cartes seront générées par JavaScript --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- PIED DE PAGE --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;footer class="pied-de-page"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;Créé par Amélie | Licence GPL&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="liens-pied"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="https://forge.apps.education.fr/Amélie/tester-les-radios-en-classe" target="_blank"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Code disponible sur forge.apps.education.fr</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="https://forge.apps.education.fr/Amélie/tester-les-radios-en-classe/-/issues" target="_blank"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>Pour rapporter un bug vous pouvez déposer un ticket</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/footer&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Paramètres</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const POINTS_PREMIERE_TENTATIVE = 10;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const POINTS_DEUXIEME_TENTATIVE = 5;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const NOMBRE_MAX_TENTATIVES = 2;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Données radios (extraits simplifiés)</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const DONNEES_RADIOS = [</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                </span>description: "Cette radio généraliste publique diffuse une programmation culturelle exigeante avec des débats politiques, des chroniques littéraires et des émissions humoristiques. Elle accueille des personnalités comme Nagui, Charline Vanhoenacker et Guillaume Meurice. Son slogan historique était 'Écoutez la différence'.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>indice: "💡 C'est la radio la plus écoutée de France, connue pour ses matinales politiques et son humour décalé.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reponse: "France Inter",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>motsCles: ["france", "inter", "franceinter"]</p>
-<p class="p1"><span class="Apple-converted-space">            </span>},</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                </span>description: "Radio commerciale privée créée en 1966, elle propose un mélange de musique, d'informations et de divertissement. Ses animateurs emblématiques incluent Laurent Ruquier et Yves Calvi. Elle revendique être 'La radio qu'on écoute' et diffuse des tubes actuels et des classiques.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>indice: "💡 Ses initiales sont celles d'un ancien poste de télévision luxembourgeois, et elle diffuse 'Les Grosses Têtes'.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reponse: "RTL",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>motsCles: ["rtl"]</p>
-<p class="p1"><span class="Apple-converted-space">            </span>},</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                </span>description: "Station musicale ciblant les 15-35 ans, elle diffuse principalement du rap, de la pop urbaine et de l'électro. Créée en 1986, elle a révolutionné le paysage radiophonique avec ses animations décalées et ses découvertes musicales. Ses animateurs comme Difool sont devenus cultes.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>indice: "💡 Son nom évoque les gratte-ciels new-yorkais et elle était pionnière du rap en France.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reponse: "Skyrock",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>motsCles: ["skyrock", "sky", "rock"]</p>
-<p class="p1"><span class="Apple-converted-space">            </span>},</p>
-<p class="p1"><span class="Apple-converted-space">            </span>{</p>
-<p class="p1"><span class="Apple-converted-space">                </span>description: "Radio d'information publique créée en 1987, elle propose des journaux toutes les heures et des magazines d'actualité. Elle couvre l'actualité nationale et internationale avec des correspondants dans le monde entier. Son indicatif musical est immédiatement reconnaissable.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>indice: "💡 C'est la radio française d'information en continu, équivalent de CNN ou BBC News.",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>reponse: "France Info",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>motsCles: ["france", "info", "franceinfo"]</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Vous pouvez ajouter d'autres radios ici</p>
-<p class="p1"><span class="Apple-converted-space">        </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>// Génération des cartes</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const grille = document.getElementById('grille-cartes');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>let scoreTotal = 0;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>DONNEES_RADIOS.forEach((radio, index) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const carte = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.className = 'carte';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.dataset.index = index;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Numéro carte</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const numero = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>numero.className = 'numero-carte';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>numero.textContent = index + 1;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.appendChild(numero);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Description</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const desc = document.createElement('p');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>desc.className = 'description-radio';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>desc.textContent = radio.description;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.appendChild(desc);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Section indice</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const sectionIndice = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sectionIndice.className = 'section-indice';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const boutonIndice = document.createElement('button');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>boutonIndice.className = 'bouton-indice';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>boutonIndice.innerHTML = '&lt;span class="icone-ampoule"&gt;💡&lt;/span&gt; Afficher un indice';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sectionIndice.appendChild(boutonIndice);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const indiceCache = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>indiceCache.className = 'indice-cache';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>indiceCache.textContent = radio.indice;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>sectionIndice.appendChild(indiceCache);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.appendChild(sectionIndice);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Zone saisie réponse</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const zoneSaisie = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>zoneSaisie.className = 'zone-saisie';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const inputReponse = document.createElement('input');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>inputReponse.type = 'text';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>inputReponse.className = 'champ-reponse';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>inputReponse.placeholder = 'Votre réponse ici...';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>zoneSaisie.appendChild(inputReponse);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const boutonValider = document.createElement('button');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>boutonValider.className = 'bouton-valider';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>boutonValider.textContent = 'Valider';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>boutonValider.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>zoneSaisie.appendChild(boutonValider);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.appendChild(zoneSaisie);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Tentatives restantes</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const tentativesRestantes = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tentativesRestantes.className = 'tentatives-restantes';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tentativesRestantes.textContent = `Tentatives restantes : ${NOMBRE_MAX_TENTATIVES}`;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.appendChild(tentativesRestantes);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Réponse révélée</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const reponseRevelee = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>reponseRevelee.className = 'reponse-revelee';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>reponseRevelee.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.appendChild(reponseRevelee);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Score carte</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const scoreCarte = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>scoreCarte.className = 'score-carte';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>carte.appendChild(scoreCarte);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Interaction indice</p>
-<p class="p1"><span class="Apple-converted-space">            </span>boutonIndice.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (indiceCache.style.display === 'none' || indiceCache.style.display === '') {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>indiceCache.style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>boutonIndice.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Activation bouton valider si texte saisi</p>
-<p class="p1"><span class="Apple-converted-space">            </span>inputReponse.addEventListener('input', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>boutonValider.disabled = inputReponse.value.trim() === '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Gestion validation réponse</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let tentatives = NOMBRE_MAX_TENTATIVES;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>boutonValider.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const reponseUser = inputReponse.value.trim().toLowerCase();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const bonneReponse = radio.motsCles.some(mot =&gt; mot.toLowerCase() === reponseUser);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (tentatives &gt; 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>tentatives--;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (bonneReponse) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>carte.classList.add('resolue');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>reponseRevelee.style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>reponseRevelee.textContent = `Bonne réponse : ${radio.reponse}`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>boutonValider.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>inputReponse.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>tentativesRestantes.textContent = 'Tentatives restantes : 0';</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const points = tentatives === NOMBRE_MAX_TENTATIVES - 1 ? POINTS_PREMIERE_TENTATIVE : POINTS_DEUXIEME_TENTATIVE;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>scoreCarte.textContent = `+${points} points`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>scoreCarte.classList.add('succes');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>scoreTotal += points;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>document.getElementById('score-total').textContent = scoreTotal;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>if (tentatives === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>carte.classList.add('echouee');</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>reponseRevelee.style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>reponseRevelee.textContent = `Réponse correcte : ${radio.reponse}`;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>boutonValider.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>inputReponse.disabled = true;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>tentativesRestantes.textContent = 'Tentatives restantes : 0';</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>scoreCarte.textContent = '+0 points';</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>scoreCarte.classList.add('echec');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>tentativesRestantes.textContent = `Tentatives restantes : ${tentatives}`;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>scoreCarte.textContent = '+0 points';</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>scoreCarte.classList.remove('succes', 'echec');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>grille.appendChild(carte);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+    <!-- EN-TÊTE -->
+    <header class="en-tete">
+        <h1 class="titre-principal">Tester les radios en classe</h1>
+        <p class="sous-titre">Découvrez les radios françaises à travers ce quiz interactif</p>
+    </header>
+
+    <!-- ZONE DE JEU -->
+    <main class="zone-jeu">
+        <div class="score-global">
+            Score total : <span id="score-total">0</span> / 120 points
+        </div>
+
+        <div class="grille-cartes" id="grille-cartes">
+            <!-- Les cartes seront générées par JavaScript -->
+        </div>
+    </main>
+
+    <!-- PIED DE PAGE -->
+    <footer class="pied-de-page">
+        <p>Créé par Amélie | Licence GPL</p>
+        <div class="liens-pied">
+            <a href="https://forge.apps.education.fr/Amélie/tester-les-radios-en-classe" target="_blank">
+                Code disponible sur forge.apps.education.fr
+            </a>
+            <a href="https://forge.apps.education.fr/Amélie/tester-les-radios-en-classe/-/issues" target="_blank">
+                Pour rapporter un bug vous pouvez déposer un ticket
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Paramètres
+        const POINTS_PREMIERE_TENTATIVE = 10;
+        const POINTS_DEUXIEME_TENTATIVE = 5;
+        const NOMBRE_MAX_TENTATIVES = 2;
+
+        // Données radios (extraits simplifiés)
+        const DONNEES_RADIOS = [
+            {
+                description: "Cette radio généraliste publique diffuse une programmation culturelle exigeante avec des débats politiques, des chroniques littéraires et des émissions humoristiques. Elle accueille des personnalités comme Nagui, Charline Vanhoenacker et Guillaume Meurice. Son slogan historique était 'Écoutez la différence'.",
+                indice: "💡 C'est la radio la plus écoutée de France, connue pour ses matinales politiques et son humour décalé.",
+                reponse: "France Inter",
+                motsCles: ["france", "inter", "franceinter"]
+            },
+            {
+                description: "Radio commerciale privée créée en 1966, elle propose un mélange de musique, d'informations et de divertissement. Ses animateurs emblématiques incluent Laurent Ruquier et Yves Calvi. Elle revendique être 'La radio qu'on écoute' et diffuse des tubes actuels et des classiques.",
+                indice: "💡 Ses initiales sont celles d'un ancien poste de télévision luxembourgeois, et elle diffuse 'Les Grosses Têtes'.",
+                reponse: "RTL",
+                motsCles: ["rtl"]
+            },
+            {
+                description: "Station musicale ciblant les 15-35 ans, elle diffuse principalement du rap, de la pop urbaine et de l'électro. Créée en 1986, elle a révolutionné le paysage radiophonique avec ses animations décalées et ses découvertes musicales. Ses animateurs comme Difool sont devenus cultes.",
+                indice: "💡 Son nom évoque les gratte-ciels new-yorkais et elle était pionnière du rap en France.",
+                reponse: "Skyrock",
+                motsCles: ["skyrock", "sky", "rock"]
+            },
+            {
+                description: "Radio d'information publique créée en 1987, elle propose des journaux toutes les heures et des magazines d'actualité. Elle couvre l'actualité nationale et internationale avec des correspondants dans le monde entier. Son indicatif musical est immédiatement reconnaissable.",
+                indice: "💡 C'est la radio française d'information en continu, équivalent de CNN ou BBC News.",
+                reponse: "France Info",
+                motsCles: ["france", "info", "franceinfo"]
+            }
+            // Vous pouvez ajouter d'autres radios ici
+        ];
+
+        // Génération des cartes
+        const grille = document.getElementById('grille-cartes');
+        let scoreTotal = 0;
+
+        DONNEES_RADIOS.forEach((radio, index) => {
+            const carte = document.createElement('div');
+            carte.className = 'carte';
+            carte.dataset.index = index;
+
+            // Numéro carte
+            const numero = document.createElement('div');
+            numero.className = 'numero-carte';
+            numero.textContent = index + 1;
+            carte.appendChild(numero);
+
+            // Description
+            const desc = document.createElement('p');
+            desc.className = 'description-radio';
+            desc.textContent = radio.description;
+            carte.appendChild(desc);
+
+            // Section indice
+            const sectionIndice = document.createElement('div');
+            sectionIndice.className = 'section-indice';
+
+            const boutonIndice = document.createElement('button');
+            boutonIndice.className = 'bouton-indice';
+            boutonIndice.innerHTML = '<span class="icone-ampoule">💡</span> Afficher un indice';
+            sectionIndice.appendChild(boutonIndice);
+
+            const indiceCache = document.createElement('div');
+            indiceCache.className = 'indice-cache';
+            indiceCache.textContent = radio.indice;
+            sectionIndice.appendChild(indiceCache);
+
+            carte.appendChild(sectionIndice);
+
+            // Zone saisie réponse
+            const zoneSaisie = document.createElement('div');
+            zoneSaisie.className = 'zone-saisie';
+
+            const inputReponse = document.createElement('input');
+            inputReponse.type = 'text';
+            inputReponse.className = 'champ-reponse';
+            inputReponse.placeholder = 'Votre réponse ici...';
+            zoneSaisie.appendChild(inputReponse);
+
+            const boutonValider = document.createElement('button');
+            boutonValider.className = 'bouton-valider';
+            boutonValider.textContent = 'Valider';
+            boutonValider.disabled = true;
+            zoneSaisie.appendChild(boutonValider);
+
+            carte.appendChild(zoneSaisie);
+
+            // Tentatives restantes
+            const tentativesRestantes = document.createElement('div');
+            tentativesRestantes.className = 'tentatives-restantes';
+            tentativesRestantes.textContent = `Tentatives restantes : ${NOMBRE_MAX_TENTATIVES}`;
+            carte.appendChild(tentativesRestantes);
+
+            // Réponse révélée
+            const reponseRevelee = document.createElement('div');
+            reponseRevelee.className = 'reponse-revelee';
+            reponseRevelee.style.display = 'none';
+            carte.appendChild(reponseRevelee);
+
+            // Score carte
+            const scoreCarte = document.createElement('div');
+            scoreCarte.className = 'score-carte';
+            carte.appendChild(scoreCarte);
+
+            // Interaction indice
+            boutonIndice.addEventListener('click', () => {
+                if (indiceCache.style.display === 'none' || indiceCache.style.display === '') {
+                    indiceCache.style.display = 'block';
+                    boutonIndice.disabled = true;
+                }
+            });
+
+            // Activation bouton valider si texte saisi
+            inputReponse.addEventListener('input', () => {
+                boutonValider.disabled = inputReponse.value.trim() === '';
+            });
+
+            // Gestion validation réponse
+            let tentatives = NOMBRE_MAX_TENTATIVES;
+            boutonValider.addEventListener('click', () => {
+                const reponseUser = inputReponse.value.trim().toLowerCase();
+                const bonneReponse = radio.motsCles.some(mot => mot.toLowerCase() === reponseUser);
+
+                if (tentatives > 0) {
+                    tentatives--;
+                    if (bonneReponse) {
+                        carte.classList.add('resolue');
+                        reponseRevelee.style.display = 'block';
+                        reponseRevelee.textContent = `Bonne réponse : ${radio.reponse}`;
+                        boutonValider.disabled = true;
+                        inputReponse.disabled = true;
+                        tentativesRestantes.textContent = 'Tentatives restantes : 0';
+                        const points = tentatives === NOMBRE_MAX_TENTATIVES - 1 ? POINTS_PREMIERE_TENTATIVE : POINTS_DEUXIEME_TENTATIVE;
+                        scoreCarte.textContent = `+${points} points`;
+                        scoreCarte.classList.add('succes');
+                        scoreTotal += points;
+                        document.getElementById('score-total').textContent = scoreTotal;
+                    } else {
+                        if (tentatives === 0) {
+                            carte.classList.add('echouee');
+                            reponseRevelee.style.display = 'block';
+                            reponseRevelee.textContent = `Réponse correcte : ${radio.reponse}`;
+                            boutonValider.disabled = true;
+                            inputReponse.disabled = true;
+                            tentativesRestantes.textContent = 'Tentatives restantes : 0';
+                            scoreCarte.textContent = '+0 points';
+                            scoreCarte.classList.add('echec');
+                        } else {
+                            tentativesRestantes.textContent = `Tentatives restantes : ${tentatives}`;
+                            scoreCarte.textContent = '+0 points';
+                            scoreCarte.classList.remove('succes', 'echec');
+                        }
+                    }
+                }
+            });
+
+            grille.appendChild(carte);
+        });
+    </script>
 </body>
 </html>
